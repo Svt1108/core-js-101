@@ -215,7 +215,7 @@ function getRectangleString(width, height) {
   const strLast = `└${'─'.repeat(width - 2)}┘\n`;
   let strMiddle = '';
   if (height > 2) {
-    strMiddle = (`│${' '.repeat(width - 2)}│\n`).repeat(height - 2);
+    strMiddle = `│${' '.repeat(width - 2)}│\n`.repeat(height - 2);
   }
   return strFirst + strMiddle + strLast;
 }
@@ -236,8 +236,36 @@ function getRectangleString(width, height) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  throw new Error('Not implemented');
+function encodeToRot13(str) {
+  const alfPart1 = 'abcdefghijklm';
+  const alfPart2 = 'nopqrstuvwxyz';
+  const alfHighPart1 = 'ABCDEFGHIJKLM';
+  const alfHighPart2 = 'NOPQRSTUVWXYZ';
+
+  const arr1 = str.split('');
+  const arr2 = [];
+
+  for (let i = 0; i < arr1.length; i += 1) {
+    const indexPart1 = alfPart1.indexOf(arr1[i]);
+    if (indexPart1 !== -1) arr2.push(alfPart2[indexPart1]);
+
+    const indexPart2 = alfPart2.indexOf(arr1[i]);
+    if (indexPart2 !== -1) arr2.push(alfPart1[indexPart2]);
+
+    const indexHighPart1 = alfHighPart1.indexOf(arr1[i]);
+    if (indexHighPart1 !== -1) arr2.push(alfHighPart2[indexHighPart1]);
+
+    const indexHighPart2 = alfHighPart2.indexOf(arr1[i]);
+    if (indexHighPart2 !== -1) arr2.push(alfHighPart1[indexHighPart2]);
+
+    if (
+      indexPart1 === -1
+            && indexPart2 === -1
+            && indexHighPart1 === -1
+            && indexHighPart2 === -1
+    ) arr2.push(arr1[i]);
+  }
+  return arr2.join('');
 }
 
 /**
@@ -253,8 +281,8 @@ function encodeToRot13(/* str */) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* value */) {
-  throw new Error('Not implemented');
+function isString(value) {
+  return typeof value === 'string' || value instanceof String;
 }
 
 /**
@@ -281,8 +309,63 @@ function isString(/* value */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  const arr = [
+    'A♣',
+    '2♣',
+    '3♣',
+    '4♣',
+    '5♣',
+    '6♣',
+    '7♣',
+    '8♣',
+    '9♣',
+    '10♣',
+    'J♣',
+    'Q♣',
+    'K♣',
+    'A♦',
+    '2♦',
+    '3♦',
+    '4♦',
+    '5♦',
+    '6♦',
+    '7♦',
+    '8♦',
+    '9♦',
+    '10♦',
+    'J♦',
+    'Q♦',
+    'K♦',
+    'A♥',
+    '2♥',
+    '3♥',
+    '4♥',
+    '5♥',
+    '6♥',
+    '7♥',
+    '8♥',
+    '9♥',
+    '10♥',
+    'J♥',
+    'Q♥',
+    'K♥',
+    'A♠',
+    '2♠',
+    '3♠',
+    '4♠',
+    '5♠',
+    '6♠',
+    '7♠',
+    '8♠',
+    '9♠',
+    '10♠',
+    'J♠',
+    'Q♠',
+    'K♠',
+  ];
+
+  return arr.indexOf(value);
 }
 
 module.exports = {
