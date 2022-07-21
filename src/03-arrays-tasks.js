@@ -563,8 +563,16 @@ function distinct(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const mapArr = new Map();
+  let key;
+  const array1 = array.map((item) => {
+    key = keySelector(item);
+    if (mapArr.has(key)) mapArr.get(key).push(valueSelector(item));
+    else mapArr.set(key, [valueSelector(item)]);
+    return mapArr;
+  });
+  return array1[0];
 }
 
 /**
@@ -580,8 +588,8 @@ function group(/* array, keySelector, valueSelector */) {
  *   [[1, 2], [3, 4], [5, 6]], (x) => x     =>   [ 1, 2, 3, 4, 5, 6 ]
  *   ['one','two','three'], x=>x.split('')  =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
-function selectMany(/* arr, childrenSelector */) {
-  throw new Error('Not implemented');
+function selectMany(arr, childrenSelector) {
+  return arr.map((item) => childrenSelector(item)).flat();
 }
 
 /**
@@ -596,8 +604,9 @@ function selectMany(/* arr, childrenSelector */) {
  *   ['one','two','three'], [2]       => 'three'  (arr[2])
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
-function getElementByIndexes(/* arr, indexes */) {
-  throw new Error('Not implemented');
+function getElementByIndexes(arr, indexes) {
+  const ind = indexes.reduce((sum, item) => sum + item, 0);
+  return arr.flat(Infinity)[ind];
 }
 
 /**
@@ -618,8 +627,18 @@ function getElementByIndexes(/* arr, indexes */) {
  *   [ 1, 2, 3, 4, 5, 6, 7, 8 ]   =>  [ 5, 6, 7, 8, 1, 2, 3, 4 ]
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+function swapHeadAndTail(arr) {
+  let arr1 = [];
+  const lengthHalf = Math.floor(arr.length / 2);
+  const dif = arr.length % 2;
+  const firstHalf = arr.slice(0, lengthHalf);
+  if (dif === 1) {
+    arr1 = arr.copyWithin(0, lengthHalf + 1).splice(0, lengthHalf + 1);
+  } else {
+    arr1 = arr.copyWithin(0, lengthHalf).splice(0, lengthHalf);
+  }
+  const arr2 = arr1.concat(firstHalf);
+  return arr2;
 }
 
 module.exports = {
