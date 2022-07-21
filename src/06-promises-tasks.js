@@ -28,11 +28,11 @@
  *                                                    //  Ask her again.';
  */
 function willYouMarryMe(isPositiveAnswer) {
-    return new Promise((resolve, reject) => {
-        if (isPositiveAnswer === true) return resolve('Hooray!!! She said "Yes"!');
-        if (isPositiveAnswer === false) return resolve('Oh no, she said "No".');
-        return reject(new Error('Wrong parameter is passed! Ask her again.'));
-    });
+  return new Promise((resolve, reject) => {
+    if (isPositiveAnswer === true) return resolve('Hooray!!! She said "Yes"!');
+    if (isPositiveAnswer === false) return resolve('Oh no, she said "No".');
+    return reject(new Error('Wrong parameter is passed! Ask her again.'));
+  });
 }
 
 /**
@@ -51,7 +51,7 @@ function willYouMarryMe(isPositiveAnswer) {
  *
  */
 function processAllPromises(array) {
-    return Promise.all(array);
+  return Promise.all(array);
 }
 
 /**
@@ -74,7 +74,7 @@ function processAllPromises(array) {
  *
  */
 function getFastestPromise(array) {
-    return Promise.race(array);
+  return Promise.race(array);
 }
 
 /**
@@ -96,21 +96,21 @@ function getFastestPromise(array) {
  */
 
 function chainPromises(array, action) {
-    return array.reduce(async(sum, item) => {
-        try {
-            return await action(
-                await sum.catch(() => null),
-                await item.catch(() => null)
-            );
-        } catch (error) {
-            return sum;
-        }
-    });
+  return array.reduce(async (sum, item) => {
+    try {
+      return await action(
+        await sum.catch(() => null),
+        await item.catch(() => null),
+      );
+    } catch (error) {
+      return sum;
+    }
+  });
 }
 
 module.exports = {
-    willYouMarryMe,
-    processAllPromises,
-    getFastestPromise,
-    chainPromises,
+  willYouMarryMe,
+  processAllPromises,
+  getFastestPromise,
+  chainPromises,
 };
