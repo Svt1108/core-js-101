@@ -6,7 +6,6 @@
  *                                                                                                *
  ************************************************************************************************ */
 
-
 /**
  * Returns the rectangle object with width and height parameters and getArea() method
  *
@@ -20,10 +19,11 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.getArea = () => width * height;
 }
-
 
 /**
  * Returns the JSON representation of specified object
@@ -35,10 +35,9 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
-
 
 /**
  * Returns the object of specified type from JSON representation
@@ -51,10 +50,10 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const jsonParse = JSON.parse(json);
+  return Object.setPrototypeOf(jsonParse, proto);
 }
-
 
 /**
  * Css selectors builder
@@ -69,12 +68,12 @@ function fromJSON(/* proto, json */) {
  * All types of selectors can be combined using the combination ' ','+','~','>' .
  *
  * The task is to design a single class, independent classes or classes hierarchy
- * and implement the functionality to build the css selectors using the provided cssSelectorBuilder.
+ * and implement the functionality to build the css selectors using the provided CSSbuilderBuilder.
  * Each selector should have the stringify() method to output the string representation
  * according to css specification.
  *
- * Provided cssSelectorBuilder should be used as facade only to create your own classes,
- * for example the first method of cssSelectorBuilder can be like this:
+ * Provided CSSbuilderBuilder should be used as facade only to create your own classes,
+ * for example the first method of CSSbuilderBuilder can be like this:
  *   element: function(value) {
  *       return new MySuperBaseElementSelector(...)...
  *   },
@@ -84,7 +83,7 @@ function fromJSON(/* proto, json */) {
  *
  * @example
  *
- *  const builder = cssSelectorBuilder;
+ *  const builder = CSSbuilderBuilder;
  *
  *  builder.id('main').class('container').class('editable').stringify()
  *    => '#main.container.editable'
@@ -110,36 +109,169 @@ function fromJSON(/* proto, json */) {
  *  For more examples see unit tests.
  */
 
+class CSSbuilder {
+  constructor() {
+    this.elementSel = '';
+    this.pseudoElementSel = '';
+    this.idSel = '';
+    this.stringSel = '';
+    this.classesSel = [];
+    this.attributeSel = [];
+    this.pseudoClassSel = [];
+    this.result = '';
+  }
+
+  element(value) {
+    if (this.elementSel !== '') {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector',
+      );
+    }
+    if (
+      this.idSel !== ''
+            || this.pseudoElementSel !== ''
+            || this.classesSel.length !== 0
+            || this.attributeSel.length !== 0
+            || this.pseudoClassSel.length !== 0
+    ) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
+    this.elementSel = value;
+    return this;
+  }
+
+  id(value) {
+    if (this.idSel) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector',
+      );
+    }
+    if (
+      this.pseudoElementSel !== ''
+            || this.classesSel.length !== 0
+            || this.attributeSel.length !== 0
+            || this.pseudoClassSel.length !== 0
+    ) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
+    this.idSel = value;
+    return this;
+  }
+
+  class(value) {
+    if (
+      this.pseudoElementSel !== ''
+            || this.attributeSel.length !== 0
+            || this.pseudoClassSel.length !== 0
+    ) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
+    this.classesSel.push(value);
+    return this;
+  }
+
+  attr(value) {
+    if (this.pseudoClassSel.length !== 0 || this.pseudoElementSel !== '') {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
+    this.attributeSel.push(value);
+    return this;
+  }
+
+  pseudoClass(value) {
+    if (this.pseudoElementSel !== '') {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
+    this.pseudoClassSel.push(value);
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (this.pseudoElementSel !== '') {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector',
+      );
+    }
+    this.pseudoElementSel = value;
+    return this;
+  }
+
+  combine(first, combinator, second) {
+    this.stringSel = `${first} ${combinator} ${second}`;
+    return this;
+  }
+
+  stringify() {
+    if (this.elementSel !== '') this.result = `${this.result}${this.elementSel}`;
+    if (this.idSel !== '') this.result = `${this.result}#${this.idSel}`;
+
+    if (this.classesSel.length !== 0) {
+      this.classesSel.forEach((item) => {
+        this.result = `${this.result}.${item}`;
+      });
+    }
+
+    if (this.attributeSel.length !== 0) {
+      this.attributeSel.forEach((item) => {
+        this.result = `${this.result}[${item}]`;
+      });
+    }
+
+    if (this.pseudoClassSel.length !== 0) {
+      this.pseudoClassSel.forEach((item) => {
+        this.result = `${this.result}:${item}`;
+      });
+    }
+
+    if (this.pseudoElementSel !== '') this.result = `${this.result}::${this.pseudoElementSel}`;
+    if (this.stringSel !== '') this.result = `${this.stringSel}`;
+    return this.result;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    return new CSSbuilder().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new CSSbuilder().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new CSSbuilder().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new CSSbuilder().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new CSSbuilder().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new CSSbuilder().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(first, combinator, second) {
+    return new CSSbuilder().combine(
+      first.stringify(),
+      combinator,
+      second.stringify(),
+    );
   },
 };
-
 
 module.exports = {
   Rectangle,
