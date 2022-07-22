@@ -441,8 +441,22 @@ function getCommonDirectoryPath(pathes) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const m12 = [];
+  let temp = 0;
+
+  for (let i = 0; i < m1.length; i += 1) m12[i] = [];
+
+  for (let i = 0; i < m2[0].length; i += 1) {
+    for (let j = 0; j < m1.length; j += 1) {
+      temp = 0;
+      for (let k = 0; k < m2.length; k += 1) {
+        temp += m1[j][k] * m2[k][i];
+      }
+      m12[j][i] = temp;
+    }
+  }
+  return m12;
 }
 
 /**
@@ -475,8 +489,67 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  for (let i = 0; i < position.length; i += 1) {
+    if (position[i].every((item) => item === 'X') && position[i].length === 3) return 'X';
+    if (position[i].every((item) => item === '0') && position[i].length === 3) return '0';
+  }
+  if (
+    [position[0][0], position[1][0], position[2][0]].every(
+      (item) => item === 'X',
+    )
+  ) return 'X';
+  if (
+    [position[0][0], position[1][0], position[2][0]].every(
+      (item) => item === '0',
+    )
+  ) return '0';
+
+  if (
+    [position[0][1], position[1][1], position[2][1]].every(
+      (item) => item === 'X',
+    )
+  ) return 'X';
+  if (
+    [position[0][1], position[1][1], position[2][1]].every(
+      (item) => item === '0',
+    )
+  ) return '0';
+
+  if (
+    [position[0][2], position[1][2], position[2][2]].every(
+      (item) => item === 'X',
+    )
+  ) return 'X';
+  if (
+    [position[0][2], position[1][2], position[2][2]].every(
+      (item) => item === '0',
+    )
+  ) return '0';
+
+  if (
+    [position[0][0], position[1][1], position[2][2]].every(
+      (item) => item === 'X',
+    )
+  ) return 'X';
+  if (
+    [position[0][0], position[1][1], position[2][2]].every(
+      (item) => item === '0',
+    )
+  ) return '0';
+
+  if (
+    [position[0][2], position[1][1], position[2][0]].every(
+      (item) => item === 'X',
+    )
+  ) return 'X';
+  if (
+    [position[0][2], position[1][1], position[2][0]].every(
+      (item) => item === '0',
+    )
+  ) return '0';
+
+  return undefined;
 }
 
 module.exports = {
